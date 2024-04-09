@@ -1,6 +1,5 @@
 """Tests for nxbdl."""
 
-
 from nxbdl import __version__
 
 

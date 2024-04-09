@@ -1,5 +1,6 @@
 """The nxb-dl CLI."""
-from typing import Optional
+
+from typing import Optional, Tuple
 
 import click
 
@@ -10,7 +11,7 @@ from nxbdl.exceptions import NoViableLinkError
 @click.command()
 @click.argument("urls", nargs=-1, required=True)
 @click.option("--resolution", "-r", default=None, help="Resolution of the video")
-def main(urls: str, resolution: Optional[str]):
+def main(urls: Tuple[str], resolution: Optional[str]) -> None:
     """Download video(s) using nxb-dl."""
     RED = "\033[91m"
     GREEN = "\033[92m"
