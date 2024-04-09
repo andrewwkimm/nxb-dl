@@ -5,10 +5,13 @@ description = "A CLI for some websites that are not supported by yt-dlp."
 authors = ["Kim, Andrew <andrewkimka@gmail.com>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+nxb-dl = "nxbdl.cli:main"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 selenium = "^4.19.0"
-cyclopts = "^2.5.0"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"
