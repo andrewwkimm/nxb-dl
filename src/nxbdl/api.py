@@ -1,7 +1,7 @@
 """The nxb-dl API."""
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from typing_extensions import Self
 
 from selenium import webdriver
@@ -25,20 +25,21 @@ class nxbdlAPI:
         """Initializes the browser."""
         self.driver = None
 
-    def download(self, url: str, resolution: Optional[str] = None) -> None:
+    def download(self, urls: Tuple[str], resolution: Optional[str] = None) -> None:
         """Downloads the desired video file."""
-        self.launch_browser()
-        self.navigate_to_page(url)
+        for url in urls:
+            self.launch_browser()
+            self.navigate_to_page(url)
 
-        download_links = self.get_download_links()
-        download_link = self.get_link_for_resolution(download_links, resolution)
+            download_links = self.get_download_links()
+            download_link = self.get_link_for_resolution(download_links, resolution)
 
-        click_link(download_link)
+            click_link(download_link)
 
-        video_file_name = self.get_video_file_name(self._default_video_name_xpath)
-        validate_file_is_downloaded(video_file_name, self._file_path)
+            video_file_name = self.get_video_file_name(self._default_video_name_xpath)
+            validate_file_is_downloaded(video_file_name, self._file_path)
 
-        self.driver.quit()
+            self.driver.quit()
         # TODO: Add a feature to retry n number of times before raising an error.
 
     def get_download_links(self) -> List[WebElement]:
