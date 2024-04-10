@@ -1,9 +1,11 @@
 """Tests the get_video_file_name() method."""
 
+from pytest_mock import MockerFixture
+
 from nxbdl.browsers import ChromeDriver
 
 
-def test_get_video_file_name(mocker):
+def test_get_video_file_name(mocker: MockerFixture) -> None:
     """Tests if get_video_file_name returns the text from the WebElement."""
     mock_element = mocker.Mock(text="sample_file_name")
 

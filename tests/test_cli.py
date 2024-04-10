@@ -2,13 +2,14 @@
 
 import click.testing
 import pytest
+from pytest_mock import MockerFixture
 
 from nxbdl.cli import main
 from nxbdl.default_values import DefaultValues
 
 
 @pytest.mark.parametrize("resolution", DefaultValues.resolutions)
-def test_cli_run(mocker, resolution: str):
+def test_cli_run(mocker: MockerFixture, resolution: str) -> None:
     """Tests main function with successful download."""
     mocker.patch("nxbdl.api.nxbdlAPI.download", return_value=None)
 
