@@ -9,13 +9,21 @@ setup:
 
 build:
 	poetry install
-	poetry run black src tests
-	poetry run flake8 src tests
-	poetry run mypy src tests --ignore-missing-import
-	poetry run pytest --cov
+	make lint
+	make reformat
+	make type_check
+	make test
 
 lint:
 	poetry run flake8 src tests
+
+reformat:
+	poetry run black src tests
+
+make setup:
+	pre-commit install --install-hooks
+	poetry config installer.modern-installation false
+	poetry install
 
 test:
 	poetry run pytest -x --cov
