@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from nxbdl.exceptions import NoViableLinkError
-from nxbdl.defaults import DefaultValues
+from nxbdl.defaults import Default
 
 
 class Browser(ABC):
@@ -52,7 +52,7 @@ class Browser(ABC):
                 if resolution in link.get_attribute("href"):
                     return link
         else:
-            for resolution in DefaultValues.resolutions:
+            for resolution in Default.resolutions:
                 for link in links:
                     if resolution in link.get_attribute("href"):
                         return link
