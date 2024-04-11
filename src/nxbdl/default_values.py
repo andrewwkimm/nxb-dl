@@ -1,5 +1,7 @@
 """Default values for nxb-dl."""
 
+from dataclasses import dataclass
+
 from pathlib import Path
 from typing import List
 
@@ -9,8 +11,11 @@ class DefaultValues:
 
     resolutions: List[str] = ["1440", "1080", "720", "520"]
     download_path: Path = Path("~/Downloads")
+    timeout: int = 30
+    websites: List = ["ninexbuddy"]
 
 
+@dataclass(frozen=True)
 class ninexbuddy:
     """Default values for 9xbuddy.com."""
 
