@@ -3,97 +3,67 @@
 # mypy: disable-error-code=operator
 
 from pathlib import Path
-from typing import List, Optional, Tuple
+import time
+from typing import Optional, Tuple, Union
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
-from nxbdl.exceptions import NoViableLinkError
+from nxbdl.browsers import ChromeDriver, FirefoxDriver
+from nxbdl.defaults import Default, ninexbuddy
 
 
 class nxbdlAPI:
     """An interface to Selenium for nxb-dl."""
 
-    _file_path: Path = Path("~/Downloads")
-    _resolutions: List[str] = ["1440", "1080", "720", "520"]
-    _default_video_name_xpath: str = "/html/body/main/section/section[3]/div[2]"
-    _default_download_links_xpath: str = "/html/body/main/section/section[3]/section[2]"
-
     def __init__(self) -> None:
         """Initializes the browser."""
-        self.driver = webdriver.Chrome()
+        self.driver = Union[ChromeDriver, FirefoxDriver]
 
-    def download(self, urls: Tuple[str], resolution: Optional[str] = None) -> None:
+    def download(
+        self,
+        urls: Union[str, Tuple[str]],
+        download_path: Optional[Path],
+        resolution: Optional[str],
+    ) -> None:
         """Downloads the desired video file."""
-        for url in urls:
-            self.navigate_to_page(url)
+        for website in Default.websites:
+            self._download_from_website(urls, download_path, resolution, website)
 
-            download_links = self.get_download_links()
-            download_link = self.get_link_for_resolution(download_links, resolution)
+    def _download_from_website(
+        self,
+        urls: Union[str, Tuple[str]],
+        download_path: Optional[Path],
+        resolution: Optional[str],
+        website: str,
+    ) -> None:
+        if website == "ninexbuddy":
+            for url in urls:
+                if download_path is None:
+                    download_path = Default.download_path
 
-            click_link(download_link)
+                self.driver = ChromeDriver()
 
-            video_file_name = self.get_video_file_name(self._default_video_name_xpath)
-            validate_file_is_downloaded(video_file_name, self._file_path)
+                self.driver.navigate_to_page(ninexbuddy.url + url)
 
-            self.driver.quit()
-        # TODO: Add a feature to retry n number of times before raising an error.
+                download_links = self.driver.get_download_links(
+                    ninexbuddy.downloads_xpath, ninexbuddy.tag_element
+                )
+                download_link = self.driver.get_link_for_resolution(
+                    download_links, resolution
+                )
 
-    def get_download_links(self) -> List[WebElement]:
-        """Gets all links available to download."""
-        wait = WebDriverWait(self.driver, 30)
-        wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, self._default_download_links_xpath)
-            )
-        )
+                self.driver.click(download_link)
 
-        download_links = self.driver.find_elements(By.TAG_NAME, "a")
-        return download_links
+                video_file_name = self.driver.get_video_file_name(
+                    ninexbuddy.video_name_xpath
+                )
+                validate_file_is_downloaded(download_path, video_file_name)
 
-    def get_link_for_resolution(
-        self, links: List[WebElement], resolution: Optional[str]
-    ) -> WebElement:
-        """Retrieves the link for the specified resolution."""
-        # TODO: Potentially rethink how to handle default resolutions.
-        #       Fix "Unsupported right operand type for in ("str | None")" error.
-        if resolution is not None:
-            for link in links:
-                if resolution in link.get_attribute("href"):
-                    return link
-        else:
-            for resolution in self._resolutions:
-                for link in links:
-                    if resolution in link.get_attribute("href"):
-                        return link
-
-        raise NoViableLinkError(
-            "No download link is available for the given resolution."
-        )
-
-    def get_video_file_name(self, xpath: str) -> str:
-        """Gets the file name of the video to be downloaded."""
-        element = self.driver.find_element(By.XPATH, xpath)
-        video_file_name = element.text
-        return video_file_name
-
-    def navigate_to_page(self, url: str) -> None:
-        """Navigates to the given URL."""
-        self.driver.get(url)
+                self.driver.quit()
 
 
-def click_link(link: WebElement) -> None:
-    """Clicks a given link."""
-    link.click()
-
-
-def validate_file_is_downloaded(file_name: str, file_path: Path) -> None:
+def validate_file_is_downloaded(download_path: Path, video_file_name: str) -> None:
     """Validates the video is fully downloaded."""
     # TODO: Add validation that checks that the video is fully downloaded.
     #       It should have a way to verify that ${file_name}.${ext} is in
     #       the listed file path instead of a .crdownload temp file.
-    if file_path is not None:
-        pass
+
+    time.sleep(Default.timeout)
