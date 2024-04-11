@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List
 
 
-class DefaultValues:
+class Default:
     """Default values."""
 
     resolutions: List[str] = ["1440", "1080", "720", "520"]
