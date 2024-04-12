@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.187.0/containers/python-3
+{
+	"name": "Python 3",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "..",
+		"args": {
+			// Update 'VARIANT' to pick a Python version: 3, 3.6, 3.7, 3.8, 3.9
+			"VARIANT": "3.10",
+			// Options
+			"INSTALL_NODE": "false",
+			"NODE_VERSION": "lts/*"
+		}
+	},
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"editor.defaultFormatter": "ms-python.python",
+		"editor.formatOnSave": true,
+		"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+		"python.formatting.provider": "black",
+		"python.languageServer": "Pylance",
+		"python.linting.enabled": true,
+		"python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+		"python.linting.flake8Enabled": true,
+		"python.linting.mypyEnabled": true,
+		"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+		"python.linting.pylintEnabled": false,
+		"python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+		"python.testing.pytestArgs": [
+			"tests"
+		],
+		"python.terminal.activateEnvironment": true,
+		"python.testing.pytestEnabled": true
+	},
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"cucumberopen.cucumber-official",
+		"ms-python.python",
+		"ms-python.vscode-pylance",
+		"redhat.vscode-yaml"
+	],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// Sets project folder as safe directory and changes ownership of it to vscode.
+	"postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && sudo chown -R vscode:vscode ${containerWorkspaceFolder} && make setup",
+	"remoteUser": "vscode"
+}
