@@ -3,10 +3,6 @@ help:
 
 ################################################################################
 
-setup:
-	pre-commit install --install-hooks
-	poetry install
-
 build:
 	poetry install
 	make lint
@@ -20,9 +16,8 @@ lint:
 reformat:
 	poetry run black src tests
 
-make setup:
+setup:
 	pre-commit install --install-hooks
-	poetry config installer.modern-installation false
 	poetry install
 
 test:
