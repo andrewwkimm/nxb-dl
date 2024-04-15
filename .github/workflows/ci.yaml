@@ -23,7 +23,4 @@ jobs:
 
       - name: Build
         run: |
-          poetry install
-          make lint
-          make reformat
-          make type_check
+          make build
