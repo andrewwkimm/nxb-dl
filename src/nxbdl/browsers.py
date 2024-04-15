@@ -7,6 +7,8 @@ from typing import List, Optional, Union
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,13 +20,17 @@ from nxbdl.defaults import Default
 class Browser(ABC):
     """An abstract base class for browser interaction using Selenium."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self, options: Optional[Union[ChromeOptions, FirefoxOptions]] = None
+    ) -> None:
         """Initializes a new Browser instance."""
         self.driver: Union[webdriver.Chrome, webdriver.Firefox]
-        self.driver = self._create_driver()
+        self.driver = self._create_driver(options)
 
     @abstractmethod
-    def _create_driver(self) -> Union[webdriver.Chrome, webdriver.Firefox]:
+    def _create_driver(
+        self, options: Optional[Union[ChromeOptions, FirefoxOptions]] = None
+    ) -> Union[webdriver.Chrome, webdriver.Firefox]:
         """An abstract method to create a specific browser driver."""
         # TODO: Add a way to accept additional parameters from the CLI
         #       that can be passed down as an option for the drivers.
@@ -37,7 +43,7 @@ class Browser(ABC):
         self, downloads_xpath: str, element: str
     ) -> List[WebElement]:
         """Gets all links available to download."""
-        wait = WebDriverWait(self.driver, 30)
+        wait = WebDriverWait(self.driver, Default.timeout)
         wait.until(EC.presence_of_element_located((By.XPATH, downloads_xpath)))
 
         download_links = self.driver.find_elements(By.TAG_NAME, element)
@@ -79,14 +85,23 @@ class Browser(ABC):
 class ChromeDriver(Browser):
     """Interface for Chrome to the Selenium WebDriver."""
 
-    def _create_driver(self) -> webdriver.Chrome:
+    def _create_driver(
+        self, options: Optional[Union[ChromeOptions, FirefoxOptions]] = None
+    ) -> webdriver.Chrome:
         """Creates a Chrome WebDriver instance."""
-        return webdriver.Chrome()
+        if not options or isinstance(options, FirefoxOptions):
+            options = ChromeOptions()
+        options.add_argument("--headless")
+        return webdriver.Chrome(options)
 
 
 class FirefoxDriver(Browser):
     """Interface for Firefox to the Selenium WebDriver."""
 
-    def _create_driver(self) -> webdriver.Firefox:
+    def _create_driver(
+        self, options: Optional[Union[ChromeOptions, FirefoxOptions]] = None
+    ) -> webdriver.Firefox:
         """Creates a Firefox WebDriver instance."""
+        if not options or isinstance(options, ChromeOptions):
+            options = FirefoxOptions()
         return webdriver.Firefox()
