@@ -7,7 +7,7 @@
 		"context": "..",
 		"args": {
 			// Update 'VARIANT' to pick a Python version: 3, 3.6, 3.7, 3.8, 3.9
-			"VARIANT": "3.10",
+			"VARIANT": "3.11",
 			// Options
 			"INSTALL_NODE": "false",
 			"NODE_VERSION": "lts/*"
@@ -41,7 +41,6 @@
 		"redhat.vscode-yaml"
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// Sets project folder as safe directory and changes ownership of it to vscode.
-	"postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && sudo chown -R vscode:vscode ${containerWorkspaceFolder} && make setup",
+	"postCreateCommand": "bash ./.devcontainer/setup.sh",
 	"remoteUser": "vscode"
 }
