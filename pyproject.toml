@@ -9,7 +9,7 @@ readme = "README.md"
 nxb-dl = "nxbdl.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10"
 selenium = "^4.19.0"
 click = "^8.1.7"
 
